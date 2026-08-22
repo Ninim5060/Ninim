@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Cute :></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.js"></script>
+    <title>AI Cute :></title>
+    <style>
+      body { 
+            font-family: Arial, sans-serif; 
+            background-image: url('PTIT.jpg'); 
+            background-size: cover; 
+            background-position: center;
+            background-attachment: fixed; /* Giúp ảnh nền đứng im, không bị lặp */
+            background-repeat: no-repeat; /* Chống nhân bản ảnh */
+            display: flex; 
+            justify-content: center; 
+            margin-top: 60px;
+            min-height: 100vh; /* Đảm bảo chiều cao luôn phủ kín màn hình */
+            transition: 0.3s; 
+            overflow-x: hidden; 
+        }
+        
+        .corner-icon {
+            position: absolute; top: 15px; left: 15px; 
+            width: 60px; height: 60px;
+            border-radius: 50%; object-fit: cover; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 1000; 
+        }
+
+        #nut-theme {
+            position: absolute; top: 15px; right: 15px;
+            padding: 10px 15px; border-radius: 20px; border: none;
+            background: #333; color: white; cursor: pointer;
+            font-weight: bold; z-index: 1000;
+        }
+/* ẢNH GÓC DƯỚI BÊN PHẢI */
+        .anh-goc-phai {
+            position: absolute; 
+            bottom: 20px; 
+            right: 20px;
+            width: 100px;  /* Chiều rộng */
+            height: 100px; /* Chiều cao dài hơn một tí xíu */
+            object-fit: cover; /* Cắt cúp ảnh tự nhiên, không bị méo */
+            border-radius: 15px; /* Bo góc cho mềm mại */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
+            z-index: 1000;
+            transition: 0.3s;
+        }
+        
+        .anh-goc-phai:hover {
+            transform: scale(1.05); /* Hiệu ứng rê chuột vào sẽ phóng to nhẹ */
+        }
+        #layout-chinh {
+            display: flex; gap: 20px; width: 900px; height: 600px; transition: 0.3s;
+        }
+
+        #sidebar {
+            width: 250px; background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            padding: 15px; display: flex; flex-direction: column;
+            transition: all 0.3s ease; overflow: hidden; white-space: nowrap;
+        }
+
+        #sidebar.thu-gon {
+            width: 0; padding: 0; opacity: 0; margin-right: -20px; 
+        }
+
+        #nut-chat-moi {
+            padding: 12px; margin-bottom: 15px; background: #0084ff; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
+        }
+
+        .muc-lich-su {
+            padding: 10px; margin-bottom: 8px; background: #f0f2f5; border-radius: 8px;
+            cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .muc-lich-su:hover { background: #e4e6eb; }
+        
+        #khung-chat-tong { 
+            flex: 1; background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            padding: 20px; transition: 0.3s; display: flex; flex-direction: column;
+        }
+
+        .header-chat { display: flex; align-items: center; position: relative; margin-bottom: 15px; }
+
+        #nut-menu {
+            background: none; border: none; font-size: 24px; cursor: pointer;
+            color: #0084ff; padding: 0 10px 0 0; transition: 0.2s;
+        }
+        #nut-menu:hover { opacity: 0.7; }
+        
+        #lich-su-chat { 
+            flex: 1; overflow-y: auto; margin-bottom: 15px; 
+            display: flex; flex-direction: column; gap: 10px; 
+        }
+        
+        .tin-nhan { max-width: 80%; padding: 10px 15px; border-radius: 15px; line-height: 1.4; }
+        .ai { background: #e4e6eb; align-self: flex-start; }
+        .nguoi-dung { background: #0084ff; color: white; align-self: flex-end; }
+        .anh-tin-nhan { max-width: 100%; border-radius: 10px; margin-top: 5px; }
+        .dang-go { font-style: italic; color: #666; animation: nhap-nhay 1.5s infinite; }
+        
+        @keyframes nhap-nhay {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        #khu-vuc-xem-truoc {
+            display: none; position: relative; margin-bottom: 10px; padding: 10px; 
+            background: rgba(0,0,0,0.05); border-radius: 10px; border: 1px dashed #aaa; width: fit-content;
+        }
+        #anh-xem-truoc { max-height: 80px; border-radius: 5px; display: block; }
+        #nut-xoa-anh {
+            position: absolute; top: -10px; right: -10px; background: red; color: white; 
+            border: none; border-radius: 50%; width: 25px; height: 25px; font-weight: bold; cursor: pointer;
+        }
+
+        #khu-vuc-nhap { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; transition: 0.3s;}
+        button { padding: 10px 20px; border-radius: 20px; border: none; background: #0084ff; color: white; cursor: pointer; transition: 0.2s;}
+        button:hover { opacity: 0.8; }
+        button:disabled, input:disabled { background: #ccc; cursor: not-allowed; }
+        #nut-mo-anh { background: #ff9800; font-size: 16px; padding: 10px 15px;}
+
+        /* CHẾ ĐỘ TỐI */
+        body.dark-mode #khung-chat-tong, body.dark-mode #sidebar { background: rgba(30, 30, 30, 0.95); }
+        body.dark-mode h2, body.dark-mode h3 { color: #ffffff !important; }
+        body.dark-mode .ai { background: #444444; color: #ffffff; }
+        body.dark-mode input[type="text"] { background: #222; color: white; border: 1px solid #555; }
+        body.dark-mode #nut-theme { background: #f0f0f0; color: #333; }
+        body.dark-mode .muc-lich-su { background: #444; color: white; }
+        body.dark-mode .muc-lich-su:hover { background: #555; }
+        body.dark-mode #nut-menu { color: #f0f0f0; }
+        body.dark-mode .dang-go { color: #aaa; }
+@media (max-width: 768px) {
+            #layout-chinh {
+                width: 95%; /* Thu nhỏ bề ngang cho vừa điện thoại */
+                height: 75vh; /* Chiều cao chiếm 75% màn hình */
+                position: relative;
+            }
+
+            /* Biến thanh lịch sử thành dạng trượt (Slide menu) đè lên trên khung chat */
+            #sidebar {
+                position: absolute;
+                z-index: 1000;
+                height: 100%;
+                left: 0;
+                top: 0;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            }
+
+            /* Thu nhỏ các icon và nút bấm cho đỡ chiếm chỗ */
+            .corner-icon { width: 45px; height: 45px; top: 10px; left: 10px; }
+            #nut-theme { top: 10px; right: 10px; padding: 8px 12px; font-size: 12px; }
+            
+            /* Ẩn ảnh anime góc phải và chỉnh lại thanh nhạc trên mobile */
+            .anh-goc-phai { display: none; } 
+            audio { width: 90%; left: 5%; bottom: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <img class="corner-icon" src="Icona.jpg" alt="Icon AI">
+    <button id="nut-theme">🌙 Giao diện Tối</button>
+
+    <div id="layout-chinh">
+        <!-- Cột trái: Thanh lịch sử (Đã làm trống) -->
+        <div id="sidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">Lịch sử trò chuyện</h3>
+                <button id="nut-dong-sidebar" title="Đóng lịch sử" style="background: none; border: none; font-size: 24px; font-weight: bold; cursor: pointer; color: #888; padding: 0;">&times;</button>
+            </div>
+            <button id="nut-chat-moi">+ Đoạn chat mới</button>
+            <div id="danh-sach-lich-su" style="overflow-y: auto; flex: 1;">
+                <!-- Trống trơn để đợi bạn lập trình thêm sau này -->
+            </div>
+        </div>
+
+        <!-- Cột phải: Khung chat hiện tại -->
+        <div id="khung-chat-tong">
+            <div class="header-chat">
+                <button id="nut-menu" title="Đóng/Mở thanh lịch sử">☰</button>
+                <h2 style="flex: 1; text-align: center; margin: 0; color: blueviolet;">Bé mèo</h2>
+                <div style="width: 24px;"></div>
+            </div>
+            
+            <div id="lich-su-chat">
+                <div class="tin-nhan ai">Chào bạn! Bạn cần giúp gì không nè :></div>
+            </div>
+
+            <div id="khu-vuc-xem-truoc">
+                <button id="nut-xoa-anh">X</button>
+                <img id="anh-xem-truoc" src="">
+            </div>
+
+            <div id="khu-vuc-nhap">
+                <input type="file" id="chon-anh" accept="image/*" style="display: none;">
+                <button id="nut-mo-anh" title="Gửi ảnh">📷</button>
+                
+                <input type="text" id="o-nhap-chu" placeholder="Nhập câu hỏi...">
+                <button id="nut-gui">Gửi</button>
+            </div>
+        </div>
+    </div>
+<!-- Thay 'ten_file_anh_cua_ban.jpg' bằng tên file ảnh thật của bạn nhé -->
+    <img class="anh-goc-phai" src="More.jpg" alt="Ảnh trang trí">
+ <audio autoplay loop controls style="position: absolute; bottom: 20px; left: 20px; filter: sepia(100%) hue-rotate(250deg) saturate(300%);">
+        <source src="lobby.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // --- NHỚ DÁN LẠI API KEY MỚI CỦA BẠN VÀO ĐÂY NHÉ ---
+        // ---------------------------------------------------
+
+        const oNhapChu = document.getElementById('o-nhap-chu');
+        const nutGui = document.getElementById('nut-gui');
+        const lichSuChat = document.getElementById('lich-su-chat');
+        const nutTheme = document.getElementById('nut-theme');
+        const chonAnh = document.getElementById('chon-anh');
+        const nutMoAnh = document.getElementById('nut-mo-anh');
+        const khuVucXemTruoc = document.getElementById('khu-vuc-xem-truoc');
+        const anhXemTruoc = document.getElementById('anh-xem-truoc');
+        const nutXoaAnh = document.getElementById('nut-xoa-anh');
+       const nutMenu = document.getElementById('nut-menu');
+        const sidebar = document.getElementById('sidebar');
+        
+        // --- DÁN 2 DÒNG NÀY VÀO ĐÂY NÈ ---
+        const nutDongSidebar = document.getElementById('nut-dong-sidebar');
+        nutDongSidebar.addEventListener('click', () => { sidebar.classList.add('thu-gon'); });
+// Bắt sự kiện khi bấm nút "+ Đoạn chat mới"
+        const nutChatMoi = document.getElementById('nut-chat-moi');
+        nutChatMoi.addEventListener('click', () => {
+            // Xóa sạch lịch sử và tạo lại câu chào mặc định ban đầu
+            lichSuChat.innerHTML = '<div class="tin-nhan ai">Chào bạn! Bạn cần giúp gì không nè :></div>';
+            
+            // Xóa luôn chữ đang gõ dở hoặc ảnh đang chọn (nếu có)
+            oNhapChu.value = '';
+            xoaHuyAnh();
+        });
+        nutMenu.addEventListener('click', () => { sidebar.classList.toggle('thu-gon'); });
+
+        let anhDangChonBase64 = null;
+        let anhDangChonMimeType = null;
+        let anhDangChonSrc = null;
+
+        nutTheme.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            nutTheme.textContent = document.body.classList.contains('dark-mode') ? "☀️ Giao diện Sáng" : "🌙 Giao diện Tối";
+        });
+
+        nutMoAnh.addEventListener('click', () => {
+            if(!nutMoAnh.disabled) chonAnh.click();
+        });
+
+        chonAnh.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    anhDangChonSrc = e.target.result; 
+                    anhDangChonBase64 = e.target.result.split(',')[1]; 
+                    anhDangChonMimeType = file.type;
+                    anhXemTruoc.src = anhDangChonSrc;
+                    khuVucXemTruoc.style.display = 'block';
+                    nutMoAnh.style.background = '#4CAF50'; 
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function xoaHuyAnh() {
+            chonAnh.value = ''; anhDangChonBase64 = null; anhDangChonSrc = null; anhDangChonMimeType = null;
+            khuVucXemTruoc.style.display = 'none'; nutMoAnh.style.background = '#ff9800'; 
+        }
+        nutXoaAnh.addEventListener('click', xoaHuyAnh);
+
+        function inTinNhan(noiDung, nguoiGui, srcAnh = null) {
+            const tinNhanMoi = document.createElement('div');
+            tinNhanMoi.className = 'tin-nhan ' + nguoiGui;
+            if (noiDung) tinNhanMoi.innerHTML = marked.parse(noiDung);;
+            
+            if (srcAnh) {
+                const theAnh = document.createElement('img');
+                theAnh.src = srcAnh; theAnh.className = 'anh-tin-nhan';
+                if(noiDung) theAnh.style.marginTop = '10px';
+                tinNhanMoi.appendChild(theAnh);
+            }
+            lichSuChat.appendChild(tinNhanMoi);
+            lichSuChat.scrollTop = lichSuChat.scrollHeight;
+            return tinNhanMoi; // Trả về thẻ HTML vừa tạo
+        }
+
+        function batTatKhungNhap(trangThai) {
+            nutGui.disabled = trangThai;
+            oNhapChu.disabled = trangThai;
+            nutMoAnh.disabled = trangThai;
+        }
+
+        async function goiAPI_AI(cauHoiCuaBan, anhBase64, mimeType, theLoading) {
+            // Gọi đến trạm trung chuyển (file chat.js) của bạn
+            const url = `/api/cam`;
+            
+            const parts = [];
+            if (cauHoiCuaBan) parts.push({ text: cauHoiCuaBan });
+            if (anhBase64) parts.push({ inlineData: { data: anhBase64, mimeType: mimeType } });
+
+            try {
+                const tuyChon = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: parts }] })
+                };
+
+                const phanHoi = await fetch(url, tuyChon);
+                const duLieu = await phanHoi.json();
+                
+                theLoading.remove(); 
+                
+                if(duLieu.candidates && duLieu.candidates.length > 0) {
+                    inTinNhan(duLieu.candidates[0].content.parts[0].text, 'ai');
+                } else if (duLieu.error) {
+                    inTinNhan("Báo lỗi: " + duLieu.error.message, 'ai');
+                }
+            } catch (loi) {
+                theLoading.remove();
+                inTinNhan("Lỗi kết nối máy chủ!", 'ai');
+            } finally {
+                batTatKhungNhap(false); 
+                oNhapChu.focus();
+            }
+        }
+
+        // ĐÂY LÀ HÀM BẠN BỊ THIẾU NÈ:
+        function xuLyGuiTinNhan() {
+            const noiDung = oNhapChu.value.trim();
+            if (noiDung === '' && !anhDangChonBase64) return; 
+
+            inTinNhan(noiDung, 'nguoi-dung', anhDangChonSrc);
+            
+            const textGuiDi = noiDung;
+            const base64GuiDi = anhDangChonBase64;
+            const mimeTypeGuiDi = anhDangChonMimeType;
+
+            oNhapChu.value = '';
+            xoaHuyAnh();
+            
+            batTatKhungNhap(true);
+            const theLoading = inTinNhan("Bé Mèo đang suy nghĩ... 💬", 'ai dang-go');
+            
+            goiAPI_AI(textGuiDi, base64GuiDi, mimeTypeGuiDi, theLoading);
+        }
+
+        nutGui.addEventListener('click', xuLyGuiTinNhan);
+        oNhapChu.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') xuLyGuiTinNhan();
+        });
+    </script>
+</body>
+</html>
